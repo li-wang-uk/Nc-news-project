@@ -41,4 +41,45 @@ describe( "/api/", ()=> {
             expect(body.allEndPoints).toEqual(endpoints)
             })
         })
-    })
+})
+
+describe( "/api/articles/:article_id", ()=> {
+    it("GET 200 sends the selected article by given article_id", () => {
+        return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then(({body}) => {
+            expect(body.articles).toHaveLength(1);
+            const selectedArticle = body.articles[0];
+            expect(typeof selectedArticle.article_id).toBe("number")
+            expect(typeof selectedArticle.author).toBe("string")
+            expect(typeof selectedArticle.title).toBe("string")
+            expect(typeof selectedArticle.article_id).toBe("number")
+            expect(typeof selectedArticle.body).toBe("string")
+            expect(typeof selectedArticle.created_at).toBe("string")
+            expect(typeof selectedArticle.votes).toBe("number")
+            expect(typeof selectedArticle.article_img_url).toBe("string")
+            })
+        })
+
+        
+    it("GET 400 when given article_id is not a number", () => {
+            return request(app)
+              .get("/api/articles/XX")
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request");
+              });
+          });
+
+    it("GET 404 when given article_id is not found", () => {
+            return request(app)
+              .get("/api/articles/10101010101")
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).toBe("Article Not Found");
+              });
+          });
+    
+})
+    
