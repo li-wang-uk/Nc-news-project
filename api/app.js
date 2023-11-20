@@ -1,9 +1,10 @@
 const express = require("express");
-const { getTopics } = require("./controllers/topics-controllers");
+const { getTopics, getEndpoints } = require("./controllers/topics-controllers");
+const { handleFourZeroFour } = require("./errors");
 const app = express();
-app.use(express.json())
 app.get("/api/topics",getTopics)
-
+app.get("/api",getEndpoints)
+app.all("*",handleFourZeroFour)
 
 
 module.exports = app; 
