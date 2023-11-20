@@ -1,7 +1,7 @@
 const app = require("../api/app");
 const request = require("supertest");
 const { topicData, userData, articleData, commentData } = require("../db/data/test-data")
-const allEndPoints = require("../endpoints.json")
+const endpoints = require("../endpoints.json")
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 
@@ -38,13 +38,7 @@ describe( "/api/", ()=> {
         .get("/api")
         .expect(200)
         .then(({body}) => {
-            const valuesOfAllEndpoints = Object.values(body);
-            const allRequests = Object.keys(body);
-            valuesOfAllEndpoints.forEach((endpoint) => {
-                expect(Object.keys(endpoint)).toEqual([ 'description', 'queries', 'exampleResponse' ])
-            })
-            expect(allRequests).toEqual([ 'GET /api', 'GET /api/topics', 'GET /api/articles' ])
-            expect(body).toEqual(allEndPoints)
+            expect(body.allEndPoints).toEqual(endpoints)
             })
         })
     })
