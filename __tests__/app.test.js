@@ -9,7 +9,7 @@ beforeEach(() => seed({ topicData, userData, articleData, commentData }));
 afterAll(() => db.end());
 
 describe( "/api/topics", ()=> {
-    it("GET 200 sends an array of topic objects", () => {
+    it("GET 200 sends an array of topics to the client", () => {
         return request(app)
         .get("/api/topics")
         .expect(200)
@@ -44,26 +44,29 @@ describe( "/api/", ()=> {
 })
 
 describe( "/api/articles/:article_id", ()=> {
-    it("GET 200 sends the selected article by given article_id", () => {
+    it("GET 200 sends the client an array of selected article with its properties by given an available article_id ", () => {
+        const articleOneCopy =    {
+            article_id: 1,
+            title: 'Living in the shadow of a great man',
+            topic: 'mitch',
+            author: 'butter_bridge',
+            body: 'I find this existence challenging',
+            created_at: '2020-07-09T21:11:00.000Z',
+            votes: 100,
+            article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+          }
         return request(app)
         .get("/api/articles/1")
         .expect(200)
         .then(({body}) => {
             expect(body.articles).toHaveLength(1);
             const selectedArticle = body.articles[0];
-            expect(typeof selectedArticle.article_id).toBe("number")
-            expect(typeof selectedArticle.author).toBe("string")
-            expect(typeof selectedArticle.title).toBe("string")
-            expect(typeof selectedArticle.article_id).toBe("number")
-            expect(typeof selectedArticle.body).toBe("string")
-            expect(typeof selectedArticle.created_at).toBe("string")
-            expect(typeof selectedArticle.votes).toBe("number")
-            expect(typeof selectedArticle.article_img_url).toBe("string")
+            expect(selectedArticle).toEqual(articleOneCopy)
             })
         })
 
         
-    it("GET 400 when given article_id is not a number", () => {
+    it("GET 400 when given article_id in URL is not in right format (number)", () => {
             return request(app)
               .get("/api/articles/XX")
               .expect(400)
@@ -72,9 +75,9 @@ describe( "/api/articles/:article_id", ()=> {
               });
           });
 
-    it("GET 404 when given article_id is not found", () => {
+    it("GET 404 when given article_id is not found in database", () => {
             return request(app)
-              .get("/api/articles/10101010101")
+              .get("/api/articles/10101")
               .expect(404)
               .then(({ body }) => {
                 expect(body.msg).toBe("Article Not Found");

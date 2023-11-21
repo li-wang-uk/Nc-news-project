@@ -9,9 +9,8 @@ exports.getTopics = (req,res,next) => {
     .catch(next)
 }
 
-exports.getEndpoints = (req,res,next) => {
+exports.getEndpoints = (req,res) => {
     res.status(200).send({allEndPoints})
-    .catch(next)
 }
 
 

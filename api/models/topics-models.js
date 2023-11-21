@@ -10,14 +10,11 @@ exports.selectTopics = () => {
 
 exports.selectArticlesById = (article_id) => {
     let queryString = `
-    SELECT * FROM articles
+    SELECT * FROM articles 
+    WHERE article_id = $1;
     `
-    if (!Number(article_id)){
-        return Promise.reject({ status: 400, msg: "Bad Request" });
-    }
-    queryString += `WHERE article_id = ${article_id} ;`
     return db
-    .query(queryString)
+    .query(queryString, [article_id])
     .then((result) => {
         if (result.rows.length === 0){
             return Promise.reject({ status: 404, msg: "Article Not Found" });
