@@ -8,6 +8,7 @@ exports.selectTopics = () => {
     })
 }
 
+
 exports.selectArticlesById = (article_id) => {
     let queryString = `
     SELECT * FROM articles 
@@ -22,3 +23,4 @@ exports.selectArticlesById = (article_id) => {
         return result.rows
     })
   }
+

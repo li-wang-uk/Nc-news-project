@@ -25,3 +25,6 @@ exports.getArticlesById = (req,res,next) =>{
         next(err)
     })
   }
+
+}
+
