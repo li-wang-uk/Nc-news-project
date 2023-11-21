@@ -20,3 +20,4 @@ exports.getAllArticles = (req,res,next) => {
     })
     .catch(next)
 }
+

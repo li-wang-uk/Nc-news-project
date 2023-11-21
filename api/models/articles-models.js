@@ -15,8 +15,8 @@ exports.selectArticlesById = (article_id) => {
     })
   }
 
-  exports.selectAllArticles = () => {
-    const queryString = `SELECT COUNT(c.comment_id) AS comment_count, a.author, a.title, a.article_id, topic, a.created_at, a.votes, a.article_img_url FROM comments c
+exports.selectAllArticles = () => {
+    const queryString = `SELECT COUNT(c.comment_id):: INT AS comment_count , a.author, a.title, a.article_id, topic, a.created_at, a.votes, a.article_img_url FROM comments c
     FULL OUTER JOIN articles a 
     ON a.article_id = c.article_id
     GROUP BY a.article_id
@@ -25,3 +25,4 @@ exports.selectArticlesById = (article_id) => {
         return result.rows
     })
 }
+
