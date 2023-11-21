@@ -26,5 +26,4 @@ exports.getArticlesById = (req,res,next) =>{
     })
   }
 
-}
 
