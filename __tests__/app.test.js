@@ -143,7 +143,7 @@ describe( "/api/articles/:article_id/comments", ()=> {
           .get("/api/articles/2/comments")
           .expect(200)
           .then(({ body }) => {
-            expect(body.comments).toEqual([])
+            expect(body.comments.length).toBe(0)
           });
       });
       it("GET 404 when given article_id is not found", () => {
