@@ -4,6 +4,7 @@ const { topicData, userData, articleData, commentData } = require("../db/data/te
 const endpoints = require("../endpoints.json")
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
+require("jest-sorted")
 
 beforeEach(() => seed({ topicData, userData, articleData, commentData }));
 afterAll(() => db.end());
@@ -86,3 +87,27 @@ describe( "/api/articles/:article_id", ()=> {
     
 })
     
+
+describe( "/api/articles", ()=> {
+    it("GET 200 sends all articles from test data in an array in descending order with their properties (apart from body)", () => {
+        return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({body}) => {
+            expect(body.articles).toBeSortedBy("created_at", {descending: true});
+            expect(body.articles).toHaveLength(13);
+            body.articles.forEach((article)=> {
+            expect(typeof article.author).toBe("string")
+            expect(typeof article.title).toBe("string")
+            expect(typeof article.article_id).toBe("number")
+            expect(typeof article.topic).toBe("string")
+            expect(typeof article.created_at).toBe("string")
+            expect(typeof article.votes).toBe("number")
+            expect(typeof article.article_img_url).toBe("string")
+            expect(typeof Number(article.comment_count)).toBe("number")
+            expect(Object.keys(article).includes('body')).toBe(false)
+            })
+        })
+        
+    })
+})
