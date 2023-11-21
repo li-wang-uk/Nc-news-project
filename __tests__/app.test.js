@@ -105,7 +105,7 @@ describe( "/api/articles", ()=> {
             expect(typeof article.votes).toBe("number")
             expect(typeof article.article_img_url).toBe("string")
             expect(typeof article.comment_count).toBe("number")
-            expect(article.hasOwnProperty('body')).toBe(false)
+            expect(article).not.toHaveProperty("body")
             })
         })
     })
@@ -122,10 +122,10 @@ describe( "/api/articles/:article_id/comments", ()=> {
             body.comments.forEach((comment)=> {
                 expect(typeof comment.author).toBe("string")
                 expect(typeof comment.votes).toBe("number")
-                expect(typeof comment.author).toBe("string")
-                expect(typeof comment.author).toBe("string")
-                expect(typeof comment.author).toBe("string")
-                expect(typeof comment.author).toBe("string")
+                expect(typeof comment.article_id).toBe("number")
+                expect(typeof comment.votes).toBe("number")
+                expect(typeof comment.created_at).toBe("string")
+                expect(typeof comment.comment_id).toBe("number")
             })
         })
     })
@@ -138,12 +138,12 @@ describe( "/api/articles/:article_id/comments", ()=> {
           });
       });
       
-      it("GET 404 when given article_id has no comments ", () => {
+      it("GET 200 when given article_id has no comments ", () => {
         return request(app)
           .get("/api/articles/2/comments")
-          .expect(404)
+          .expect(200)
           .then(({ body }) => {
-            expect(body.msg).toBe("Comments Not Found");
+            expect(body.comments).toEqual([])
           });
       });
       it("GET 404 when given article_id is not found", () => {

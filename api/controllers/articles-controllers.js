@@ -30,10 +30,6 @@ exports.getCommentsByArticleId = (req,res,next) => {
     Promise.all(commentsByAriticleIdPromises)
     .then((resolvedComments) => {
         const comments = resolvedComments[0]
-        if (comments.length === 0){
-            return Promise.reject({ status: 404, msg: "Comments Not Found" });
-        }
-
         res.status(200).send({comments})
     })
     .catch((err)=> {
