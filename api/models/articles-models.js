@@ -26,3 +26,30 @@ exports.selectAllArticles = () => {
     })
 }
 
+exports.checkArticleIdExists = (article_id) => {
+    return db
+    .query(`
+    SELECT * FROM articles
+    WHERE article_id = $1;`, [article_id])
+    .then(({rows}) => {
+        if(!rows.length) {
+            return Promise.reject({status: 404, msg: 'Article Not Found'})
+        }
+    })
+}
+
+exports.selectCommentsByArticleId = (article_id) => {
+    const queryString = `
+    SELECT * FROM comments
+    where article_id = $1
+    ORDER BY created_at DESC ;
+    `
+    return db
+    .query(queryString, [article_id])
+    .then((result) => {
+
+        return result.rows
+    })
+
+}
+
