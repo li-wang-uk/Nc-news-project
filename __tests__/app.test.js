@@ -119,6 +119,7 @@ describe( "/api/articles/:article_id/comments", ()=> {
         .expect(200)
         .then(({body}) => {
             expect(body.comments).toBeSortedBy("created_at", {descending: true});
+            expect(body.comments.length).toBe(2)
             body.comments.forEach((comment)=> {
                 expect(typeof comment.author).toBe("string")
                 expect(typeof comment.votes).toBe("number")
