@@ -68,3 +68,33 @@ exports.insertComment = (article_id, { body, author }) => {
         return result.rows[0];
       });
   };
+
+exports.insertVote = (article_id, { inc_votes }) => {
+    if (!article_id || !inc_votes ){
+        return Promise.reject({status:400,msg: 'Bad request'})
+      }
+    const queryString = `
+    UPDATE articles 
+    SET votes = votes + $2
+    WHERE article_id = $1
+    RETURNING *;
+    `
+    return db
+    .query(queryString, [article_id, inc_votes])
+    .then((result) => {
+        return result.rows[0]
+    })
+}
+
+
+exports.checkVotesBelowZero = (article_id,updatedVote) => {
+    return db
+    .query(`
+    SELECT votes FROM articles
+    WHERE article_id = $1;`, [article_id])
+    .then(({rows}) => {
+        if((rows[0].votes + updatedVote.inc_votes) < 0) {
+            return Promise.reject({status: 400, msg: 'Bad Request'})
+        }
+    })
+}
