@@ -85,6 +85,122 @@ describe( "/api/articles/:article_id", ()=> {
               });
           });
     
+
+  it("PATCH 200 when the vote of the selected artictle can be incremented without changing rest properties of the article", () => {
+            const updatedVote =  {
+              inc_votes:1
+              }
+            const articleOneCopy =    {
+              article_id: 1,
+              title: 'Living in the shadow of a great man',
+              topic: 'mitch',
+              author: 'butter_bridge',
+              body: 'I find this existence challenging',
+              created_at: '2020-07-09T21:11:00.000Z',
+              votes: 100,
+              article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+            }
+            return request(app)
+            .patch('/api/articles/1')
+            .send(updatedVote)
+            .expect(200)
+            .then(({body}) => {
+              const selectedArticle = body.articles
+              expect(selectedArticle.votes).toBe(101)
+              expect(selectedArticle.author).toBe(articleOneCopy.author)
+              expect(selectedArticle.comment_count).toBe(articleOneCopy.comment_count)
+              expect(selectedArticle.title).toBe(articleOneCopy.title)
+              expect(selectedArticle.article_id).toBe(articleOneCopy.article_id)
+              expect(selectedArticle.topic).toBe(articleOneCopy.topic)
+              expect(selectedArticle.created_at).toBe(articleOneCopy.created_at)
+              expect(selectedArticle.article_img_url).toBe(articleOneCopy.article_img_url)
+            })
+          }) 
+
+it("PATCH 200 when the vote of the selected artictle can be decremented without changing rest properties of the article", () => {
+            const updatedVote =  {
+              inc_votes:-1
+              }
+            const articleOneCopy =    {
+                article_id: 1,
+                title: 'Living in the shadow of a great man',
+                topic: 'mitch',
+                author: 'butter_bridge',
+                body: 'I find this existence challenging',
+                created_at: '2020-07-09T21:11:00.000Z',
+                votes: 100,
+                article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+              }
+            return request(app)
+            .patch('/api/articles/1')
+            .send(updatedVote)
+            .expect(200)
+            .then(({body}) => {
+              const selectedArticle = body.articles
+              expect(selectedArticle.votes).toBe(99)
+              expect(selectedArticle.author).toBe(articleOneCopy.author)
+              expect(selectedArticle.comment_count).toBe(articleOneCopy.comment_count)
+              expect(selectedArticle.title).toBe(articleOneCopy.title)
+              expect(selectedArticle.article_id).toBe(articleOneCopy.article_id)
+              expect(selectedArticle.topic).toBe(articleOneCopy.topic)
+              expect(selectedArticle.created_at).toBe(articleOneCopy.created_at)
+              expect(selectedArticle.article_img_url).toBe(articleOneCopy.article_img_url)
+            })
+          })
+
+
+  it("PATCH 400 when decrement a 0-vote article", () => {
+            const updatedVote =  {
+              inc_votes:-1
+              }
+            return request(app)
+            .patch('/api/articles/9')
+            .send(updatedVote)
+            .expect(400)
+            .then(({body}) => {
+              expect(body.msg).toBe("Bad Request");
+            }) 
+      })
+
+    it("PATCH 400 when given vote is not in correct format", () => {
+        const updatedVote =  {
+          inc_votes:"test"
+          }
+        return request(app)
+        .patch('/api/articles/9')
+        .send(updatedVote)
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe("Bad Request");
+        }) 
+      })
+
+  it("PATCH 400 when given article_id in URL is not in right format (number) ", () => {
+        const updatedVote =  {
+          inc_votes:-1
+          }
+        return request(app)
+        .patch('/api/articles/XX')
+        .send(updatedVote)
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe("Bad Request");
+        }) 
+      })
+
+  it("PATCH 404 when given article_id is not found in database", () => {
+  const updatedVote =  {
+    inc_votes:-1
+    }
+  return request(app)
+  .patch('/api/articles/10101')
+  .send(updatedVote)
+  .expect(404)
+  .then(({body}) => {
+  expect(body.msg).toBe("Article Not Found");
+  }) 
+})
+
 })
     
 
