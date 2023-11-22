@@ -139,7 +139,7 @@ describe( "/api/articles/:article_id/comments", ()=> {
           });
       });
       
-      it("GET 200 when given article_id has no comments ", () => {
+    it("GET 200 when given article_id has no comments ", () => {
         return request(app)
           .get("/api/articles/2/comments")
           .expect(200)
@@ -156,6 +156,75 @@ describe( "/api/articles/:article_id/comments", ()=> {
           });
     })
 
-
-
+    it("POST 201 when inserts a new comment for an available selected article", () => {
+        const newComment =  {
+            body: "Testing Comments",
+            author: "lurker"
+          }
+        return request(app)
+        .post('/api/articles/9/comments')
+        .send(newComment)
+        .expect(201)
+        .then((response) => {
+            expect(response.body.comment.body).toBe("Testing Comments")
+            expect(response.body.comment.author).toBe("lurker")
+            expect(response.body.comment.comment_id).toBe(19)
+        })
 })
+
+    it("POST 404 when inserting comment to a non-exist article which violate the foreign key reference rules", () => {
+    const newComment =  {
+    body: "Testing Comments",
+    author: "lurker"
+  }
+    return request(app)
+      .post("/api/articles/10001/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Resource Not Found");
+      });
+})
+
+it("POST 404 when inserting comment to a non-exist user which violate the foreign key reference rules", () => {
+  const newComment =  {
+  body: "Testing Comments",
+  author: "lur"
+}
+  return request(app)
+    .post("/api/articles/1/comments")
+    .send(newComment)
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Resource Not Found");
+    });
+})
+
+    it("POST 400 when given article_id has a bad name to post comment", () => {
+    const newComment =  {
+    body: "Testing Comments",
+    author: "lurker"
+  }
+    return request(app)
+      .post("/api/articles/XX/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+})
+
+    it("POST 400 when comment missing required elements", () => {
+    const newComment =  {
+    body: "Testing Comments"
+  }
+    return request(app)
+      .post("/api/articles/9/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+})
+})
+

@@ -53,3 +53,18 @@ exports.selectCommentsByArticleId = (article_id) => {
 
 }
 
+
+exports.insertComment = (article_id, { body, author }) => {
+    if (!article_id || !body || !author){
+      return Promise.reject({status:400,msg: 'Bad request'})
+    }
+    
+    return db
+      .query(
+        'INSERT INTO comments (body, article_id, author) VALUES ($1, $2, $3) RETURNING *;',
+        [body, article_id, author]
+      )
+      .then((result) => {
+        return result.rows[0];
+      });
+  };
