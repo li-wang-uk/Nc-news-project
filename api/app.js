@@ -1,13 +1,15 @@
 const express = require("express");
 const { getTopics, getEndpoints} = require("./controllers/topics-controllers");
 const { handleFourZeroFour, handleCustomErrors, handlePsqlErrors, handleServerErrors } = require("./errors");
-const { getArticlesById, getAllArticles, getCommentsByArticleId } = require("./controllers/articles-controllers");
+const { getArticlesById, getAllArticles, getCommentsByArticleId, postComment } = require("./controllers/articles-controllers");
 const app = express();
+app.use(express.json())
 app.get("/api/topics",getTopics)
 app.get("/api",getEndpoints)
 app.get("/api/articles/:article_id",getArticlesById)
 app.get("/api/articles",getAllArticles)
 app.get("/api/articles/:article_id/comments",getCommentsByArticleId)
+app.post("/api/articles/:article_id/comments",postComment)
 app.use(handleCustomErrors);
 app.use(handlePsqlErrors);
 app.use(handleServerErrors);

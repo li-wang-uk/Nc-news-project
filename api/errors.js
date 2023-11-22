@@ -6,12 +6,15 @@ exports.handleCustomErrors = (err, req, res, next) => {
     }
 }
 exports.handlePsqlErrors = (err, req, res, next) => {
-    if(err.code === '22P02'){
+    if(err.code === '22P02' || '23503'){
         res.status(400).send({ msg: 'Bad Request' });
-    } else {
+    }
+    else {
         next(err);
     }
 }
+
+
 
 exports.handleServerErrors = (err, req, res, next) => {
     console.log(err)
