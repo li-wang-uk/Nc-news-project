@@ -172,7 +172,7 @@ describe( "/api/articles/:article_id/comments", ()=> {
         })
 })
 
-    it("POST 400 when inserting comment to a non-exist article which violate the forienge key reference rules", () => {
+    it("POST 404 when inserting comment to a non-exist article which violate the foreign key reference rules", () => {
     const newComment =  {
     body: "Testing Comments",
     author: "lurker"
@@ -180,13 +180,13 @@ describe( "/api/articles/:article_id/comments", ()=> {
     return request(app)
       .post("/api/articles/10001/comments")
       .send(newComment)
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad Request");
+        expect(body.msg).toBe("Resource Not Found");
       });
 })
 
-it("POST 400 when inserting comment to a non-exist user which violate the forienge key reference rules", () => {
+it("POST 404 when inserting comment to a non-exist user which violate the foreign key reference rules", () => {
   const newComment =  {
   body: "Testing Comments",
   author: "lur"
@@ -194,9 +194,9 @@ it("POST 400 when inserting comment to a non-exist user which violate the forien
   return request(app)
     .post("/api/articles/1/comments")
     .send(newComment)
-    .expect(400)
+    .expect(404)
     .then(({ body }) => {
-      expect(body.msg).toBe("Bad Request");
+      expect(body.msg).toBe("Resource Not Found");
     });
 })
 
@@ -227,3 +227,4 @@ it("POST 400 when inserting comment to a non-exist user which violate the forien
       });
 })
 })
+
