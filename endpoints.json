@@ -113,6 +113,17 @@
   "description": "deletes the selected comment by given comment_id",
   "queries": [],
   "exampleResponse": "No response will be sent back"
+},
+
+"GET /api/users" : {
+  "description": "sends all available users in database",
+  "queries": [],
+  "exampleResponse":     {
+    "username": "lurker",
+    "name": "do_nothing",
+    "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+  }
 }
+
 
 }

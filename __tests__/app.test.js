@@ -368,5 +368,30 @@ describe("/api/comments/:comment_id", ()=> {
       expect(response.body.msg).toBe('Bad Request');
     })
 })
+it('DELETE:404 responds with an appropriate status and error message when not giving a comment_id', () => {
+  return request(app)
+    .delete('/api/comments/')
+    .expect(404)
+    .then((response) => {
+      expect(response.body.msg).toBe('path not found');
+    })
+})
+})
+
+
+describe("/api/users", ()=> {
+  it("GET 200 sends an array of all users with required properties", () => {
+      return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({body}) => {
+        expect(body.users.length).toBe(4)
+        body.users.forEach((user) => {
+          expect(typeof user.username).toBe("string")
+          expect(typeof user.name).toBe("string")
+          expect(typeof user.avatar_url).toBe("string")
+        })
+      })
+  })
 
 })
