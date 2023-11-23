@@ -1,4 +1,5 @@
-const { selectArticlesById, selectAllArticles, selectCommentsByArticleId, checkArticleIdExists, insertComment, insertVote, checkZeroVotes, checkVotesBelowZero } = require("../models/articles-models");
+const { selectArticlesById, selectAllArticles, selectCommentsByArticleId, checkArticleIdExists, insertComment, insertVote, checkVotesBelowZero } = require("../models/articles-models");
+const { checkTopicExists } = require("../models/topics-models");
 
 exports.getArticlesById = (req,res,next) =>{
     const {article_id} = req.params;
@@ -11,12 +12,38 @@ exports.getArticlesById = (req,res,next) =>{
     })
   }
 
-exports.getAllArticles = (req,res,next) => {
-    selectAllArticles()
-    .then((articles) => {
-        res.status(200).send({articles})
-    })
-    .catch(next)
+  exports.getAllArticles = (req,res,next) => {
+    if(Object.keys(req.query).length !== 0){
+        const {topic} = req.query;
+        if (topic){
+            Promise.all([selectAllArticles(topic),checkTopicExists(topic)])
+            .then((resolvedArticles) => {
+                const articles = resolvedArticles[0]
+                if(articles.length === 0) {
+                    return Promise.reject({status: 404, msg: 'Article Not Found'})
+                }
+                res.status(200).send({articles})
+            })
+            .catch((err)=> {
+                next(err)
+            })
+        } else {
+            return Promise.reject({status: 400, msg: 'Bad Request'})
+            .catch((err)=> {
+                 next(err)
+            })
+        }
+
+    }else{
+        selectAllArticles()
+        .then((articles) => {
+            res.status(200).send({articles})
+        })
+        .catch((err)=> {
+            next(err)
+        })
+    }
+
 }
 
 exports.getCommentsByArticleId = (req,res,next) => {

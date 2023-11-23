@@ -225,6 +225,45 @@ describe( "/api/articles", ()=> {
             })
         })
     })
+
+    it("GET 200 sends an array of selected articles matching the topic when passed a valid topic query", () => {
+      return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles.length).toBe(1)
+        body.articles.forEach((article) => {
+          expect(article.topic).toBe('cats')
+        })
+      })
+  })
+
+  it("GET 404 when a topic does not exist", () => {
+    return request(app)
+    .get("/api/articles?topic=XX")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Topic Not Found");
+      })
+  })
+
+  it("GET 400 when given a empty topic query", () => {
+    return request(app)
+    .get("/api/articles?topic=")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad Request");
+      })
+  })
+
+  it("GET 404 when there is no articles under a valid topic", () => {
+    return request(app)
+    .get("/api/articles?topic=paper")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Article Not Found");
+      })
+  })
 })
 
 describe( "/api/articles/:article_id/comments", ()=> {

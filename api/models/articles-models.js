@@ -1,4 +1,5 @@
 const db = require("../../db/connection");
+const format = require("pg-format");
 
 exports.selectArticlesById = (article_id) => {
     let queryString = `
@@ -15,16 +16,33 @@ exports.selectArticlesById = (article_id) => {
     })
   }
 
-exports.selectAllArticles = () => {
-    const queryString = `SELECT COUNT(c.comment_id):: INT AS comment_count , a.author, a.title, a.article_id, topic, a.created_at, a.votes, a.article_img_url FROM comments c
+  exports.selectAllArticles = (topic) => {
+    let queryString = `SELECT COUNT(c.comment_id):: INT AS comment_count , a.author, a.title, a.article_id, topic, a.created_at, a.votes, a.article_img_url FROM comments c
     FULL OUTER JOIN articles a 
     ON a.article_id = c.article_id
+   `
+    if (topic){
+      const topicQuery = format(`WHERE topic = %L`, topic ); 
+      queryString += topicQuery;
+    }
+  
+    const orderString = `
     GROUP BY a.article_id
     ORDER BY a.created_at DESC ;`
-    return db.query(queryString).then((result) => {
+  
+    queryString += orderString;
+  
+    return db
+    .query(queryString)
+    .then((result) => {
+      if (result.rows.length === 0){
+        return Promise.reject({ status: 404, msg: "Article Not Found" });
+    }
         return result.rows
     })
-}
+  }
+  
+  
 
 exports.checkArticleIdExists = (article_id) => {
     return db
