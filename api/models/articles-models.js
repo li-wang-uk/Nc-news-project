@@ -4,7 +4,7 @@ const format = require("pg-format");
 exports.selectArticlesById = (article_id) => {
     let queryString = `
     SELECT  COUNT(c.comment_id):: INT AS comment_count, a.* FROM comments c
-    FULL OUTER JOIN articles a 
+    LEFT JOIN articles a 
     ON a.article_id = c.article_id
     WHERE a.article_id = $1 
     GROUP BY a.article_id ;

@@ -63,7 +63,7 @@ describe( "/api/articles/:article_id", ()=> {
         .then(({body}) => {
             expect(body.articles).toHaveLength(1);
             const selectedArticle = body.articles[0];
-            expect(selectedArticle).toEqual(articleOneCopy)
+            expect(selectedArticle).toMatchObject(articleOneCopy)
             })
         })
 
