@@ -225,6 +225,59 @@ describe( "/api/articles", ()=> {
             })
         })
     })
+
+    it("GET 200 sends an array of selected articles matching the topic when passed a valid topic query", () => {
+      return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles.length).toBe(1)
+        body.articles.forEach((article) => {
+          expect(article.topic).toBe('cats')
+        })
+      })
+  })
+
+  it("GET 404 when a topic does not exist", () => {
+    return request(app)
+    .get("/api/articles?topic=XX")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Topic Not Found");
+      })
+  })
+
+  it("GET 200 to return full articles like get /api/articles when given an empty topic query", () => {
+    return request(app)
+    .get("/api/articles?topic=")
+    .expect(200)
+    .then(({ body }) => {
+
+      expect(body.articles).toBeSortedBy("created_at", {descending: true});
+      expect(body.articles).toHaveLength(13);
+      body.articles.forEach((article)=> {
+      expect(typeof article.author).toBe("string")
+      expect(typeof article.title).toBe("string")
+      expect(typeof article.article_id).toBe("number")
+      expect(typeof article.topic).toBe("string")
+      expect(typeof article.created_at).toBe("string")
+      expect(typeof article.votes).toBe("number")
+      expect(typeof article.article_img_url).toBe("string")
+      expect(typeof article.comment_count).toBe("number")
+      expect(article).not.toHaveProperty("body")
+      })
+
+      })
+  })
+
+  it("GET 200 when there is no articles under a valid topic", () => {
+    return request(app)
+    .get("/api/articles?topic=paper")
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.articles).toEqual([])
+      })
+  })
 })
 
 describe( "/api/articles/:article_id/comments", ()=> {

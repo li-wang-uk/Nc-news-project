@@ -1,4 +1,5 @@
-const { selectArticlesById, selectAllArticles, selectCommentsByArticleId, checkArticleIdExists, insertComment, insertVote, checkZeroVotes, checkVotesBelowZero } = require("../models/articles-models");
+const { selectArticlesById, selectAllArticles, selectCommentsByArticleId, checkArticleIdExists, insertComment, insertVote, checkVotesBelowZero } = require("../models/articles-models");
+const { checkTopicExists } = require("../models/topics-models");
 
 exports.getArticlesById = (req,res,next) =>{
     const {article_id} = req.params;
@@ -11,12 +12,27 @@ exports.getArticlesById = (req,res,next) =>{
     })
   }
 
-exports.getAllArticles = (req,res,next) => {
-    selectAllArticles()
-    .then((articles) => {
-        res.status(200).send({articles})
-    })
-    .catch(next)
+  exports.getAllArticles = (req,res,next) => {
+        if(req.query.topic){
+            const {topic} = req.query;
+            Promise.all([selectAllArticles(topic),checkTopicExists(topic)])
+            .then((resolvedArticles) => {
+                const articles = resolvedArticles[0]
+                res.status(200).send({articles})
+            })
+            .catch((err)=> {
+                next(err)
+            })
+        } else {
+            selectAllArticles()
+            .then((articles) => {
+                res.status(200).send({articles})
+            })
+            .catch((err)=> {
+                next(err)
+            })
+        }
+
 }
 
 exports.getCommentsByArticleId = (req,res,next) => {
