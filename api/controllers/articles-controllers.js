@@ -13,36 +13,25 @@ exports.getArticlesById = (req,res,next) =>{
   }
 
   exports.getAllArticles = (req,res,next) => {
-    if(Object.keys(req.query).length !== 0){
-        const {topic} = req.query;
-        if (topic){
+        if(req.query.topic){
+            const {topic} = req.query;
             Promise.all([selectAllArticles(topic),checkTopicExists(topic)])
             .then((resolvedArticles) => {
                 const articles = resolvedArticles[0]
-                if(articles.length === 0) {
-                    return Promise.reject({status: 404, msg: 'Article Not Found'})
-                }
                 res.status(200).send({articles})
             })
             .catch((err)=> {
                 next(err)
             })
         } else {
-            return Promise.reject({status: 400, msg: 'Bad Request'})
+            selectAllArticles()
+            .then((articles) => {
+                res.status(200).send({articles})
+            })
             .catch((err)=> {
-                 next(err)
+                next(err)
             })
         }
-
-    }else{
-        selectAllArticles()
-        .then((articles) => {
-            res.status(200).send({articles})
-        })
-        .catch((err)=> {
-            next(err)
-        })
-    }
 
 }
 

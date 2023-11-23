@@ -247,21 +247,35 @@ describe( "/api/articles", ()=> {
       })
   })
 
-  it("GET 400 when given a empty topic query", () => {
+  it("GET 200 to return full articles like get /api/articles when given an empty topic query", () => {
     return request(app)
     .get("/api/articles?topic=")
-    .expect(400)
+    .expect(200)
     .then(({ body }) => {
-      expect(body.msg).toBe("Bad Request");
+
+      expect(body.articles).toBeSortedBy("created_at", {descending: true});
+      expect(body.articles).toHaveLength(13);
+      body.articles.forEach((article)=> {
+      expect(typeof article.author).toBe("string")
+      expect(typeof article.title).toBe("string")
+      expect(typeof article.article_id).toBe("number")
+      expect(typeof article.topic).toBe("string")
+      expect(typeof article.created_at).toBe("string")
+      expect(typeof article.votes).toBe("number")
+      expect(typeof article.article_img_url).toBe("string")
+      expect(typeof article.comment_count).toBe("number")
+      expect(article).not.toHaveProperty("body")
+      })
+
       })
   })
 
-  it("GET 404 when there is no articles under a valid topic", () => {
+  it("GET 200 when there is no articles under a valid topic", () => {
     return request(app)
     .get("/api/articles?topic=paper")
-    .expect(404)
+    .expect(200)
     .then(({ body }) => {
-      expect(body.msg).toBe("Article Not Found");
+      expect(body.articles).toEqual([])
       })
   })
 })
