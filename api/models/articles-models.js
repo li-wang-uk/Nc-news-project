@@ -86,7 +86,6 @@ exports.insertVote = (article_id, { inc_votes }) => {
     })
 }
 
-
 exports.checkVotesBelowZero = (article_id,updatedVote) => {
     return db
     .query(`

@@ -107,6 +107,12 @@
       }
     ]
   }
+},
+
+"DELETE /api/comments/:comment_id" : {
+  "description": "deletes the selected comment by given comment_id",
+  "queries": [],
+  "exampleResponse": "No response will be sent back"
 }
 
 }

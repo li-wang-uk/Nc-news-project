@@ -344,3 +344,29 @@ it("POST 404 when inserting comment to a non-exist user which violate the foreig
 })
 })
 
+
+describe("/api/comments/:comment_id", ()=> {
+  it("DELETE 204 when a selected comment deleted with a valid comment_id and sends no body back", () => {
+      return request(app)
+      .delete("/api/comments/10")
+      .expect(204)
+  })
+
+  it('DELETE:404 responds with an appropriate status and error message when given a non-existent id', () => {
+  return request(app)
+    .delete('/api/comments/999')
+    .expect(404)
+    .then((response) => {
+      expect(response.body.msg).toBe('Comment Not Found');
+    })
+})
+  it('DELETE:400 responds with an appropriate status and error message when given an invalid id', () => {
+  return request(app)
+    .delete('/api/comments/banana')
+    .expect(400)
+    .then((response) => {
+      expect(response.body.msg).toBe('Bad Request');
+    })
+})
+
+})
