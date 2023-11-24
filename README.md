@@ -6,7 +6,7 @@ Please visit https://liwang-ncnews.onrender.com/api/ to access this project.
 - This project is called Northcoders News API. 
 - It is an API for the purpose of application data programmatically like a real world backend service. Users are able to use GET/POST/PATCH/DELETE to access/change the information they needed based on their query on SQL database. 
 - The database is PSQL and hosted on Elephant SQL.
-- The web service is hosted on Renter. 
+- The web service is hosted on Render. 
 - https://liwang-ncnews.onrender.com/api/ will show you all available endpoints you can access. 
 
 ## Project instructions: 
@@ -18,7 +18,7 @@ Please visit https://liwang-ncnews.onrender.com/api/ to access this project.
 
 - Then you will need to install dependencies by typing 
 
-        npm install -D
+        npm install
 
 - Please note, you will need to create your own env files on your machine. 
 
