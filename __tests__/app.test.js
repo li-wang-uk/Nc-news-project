@@ -533,4 +533,31 @@ describe("/api/users", ()=> {
       })
   })
 
+  it("GET 200 sends the client an array of selected user with its properties by given a username ", () => {
+    const UserCopy =    {
+      username: 'lurker',
+      name: 'do_nothing',
+      avatar_url:
+        'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png'
+    }
+    return request(app)
+    .get("/api/users/lurker")
+    .expect(200)
+    .then(({body}) => {
+        expect(body.users).toHaveLength(1);
+        const selectedUser = body.users[0];
+        expect(selectedUser).toMatchObject(UserCopy)
+        })
+    })
+
+    it("GET 404 when given username is not found in database", () => {
+      return request(app)
+        .get("/api/users/lur")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("User Not Found");
+        });
+    });
+
+  
 })
