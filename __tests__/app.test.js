@@ -4,7 +4,6 @@ const { topicData, userData, articleData, commentData } = require("../db/data/te
 const endpoints = require("../endpoints.json")
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
-const { expect } = require("@jest/globals");
 require("jest-sorted")
 
 beforeEach(() => seed({ topicData, userData, articleData, commentData }));
@@ -365,6 +364,36 @@ describe( "/api/articles", ()=> {
     })
     })
   })
+
+  it.only("POST 201 when insert a new article ", () => {
+    const updatedArticle =  {
+        author: "icellusedkars",
+        title:"Testing title",
+        body:"Testing text",
+        topic:"cats",
+
+      }
+    return request(app)
+    .post('/api/articles') 
+    .send(updatedArticle)
+    .expect(201)
+    .then(({body}) => {
+      const selectedArticle = body.articles
+      console.log(selectedArticle)
+
+      expect(selectedArticle.author).toBe(updatedArticle.author)
+      expect(selectedArticle.title).toBe(updatedArticle.title)
+      expect(selectedArticle.body).toBe(updatedArticle.body)
+      expect(selectedArticle.topic).toBe(updatedArticle.topic)
+      expect(typeof selectedArticle.article_img_url).toBe("string")
+      expect(selectedArticle.article_id).toBe(14)
+      expect(selectedArticle.votes).toBe(0)
+      expect(typeof selectedArticle.created_at).toBe("string")
+      // expect(selectedArticle.comment_count).toBe(0) //not finished yet 
+    })
+
+})
+ 
 })
 
 describe( "/api/articles/:article_id/comments", ()=> {

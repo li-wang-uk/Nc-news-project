@@ -134,3 +134,19 @@ exports.checkVotesBelowZero = (article_id,updatedVote) => {
         }
     })
 }
+
+exports.insertArticles = ({author, title, body, topic, article_img_url = 'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700'}) => {
+  const queryString = `
+  INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5)
+  RETURNING * ;
+  `
+
+  return db
+  .query(
+      queryString, [author,title,body,topic,article_img_url]
+  )
+  .then((result) => {
+      return result.rows[0]
+  })
+}
+
