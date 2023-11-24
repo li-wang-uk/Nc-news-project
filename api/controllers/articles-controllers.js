@@ -13,9 +13,10 @@ exports.getArticlesById = (req,res,next) =>{
   }
 
   exports.getAllArticles = (req,res,next) => {
+    const {sort_by, order} =req.query;
         if(req.query.topic){
-            const {topic} = req.query;
-            Promise.all([selectAllArticles(topic),checkTopicExists(topic)])
+            const { topic} = req.query;
+            Promise.all([selectAllArticles(sort_by, order,topic),checkTopicExists(topic)])
             .then((resolvedArticles) => {
                 const articles = resolvedArticles[0]
                 res.status(200).send({articles})
@@ -24,7 +25,7 @@ exports.getArticlesById = (req,res,next) =>{
                 next(err)
             })
         } else {
-            selectAllArticles()
+            selectAllArticles(sort_by, order)
             .then((articles) => {
                 res.status(200).send({articles})
             })

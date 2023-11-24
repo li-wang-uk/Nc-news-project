@@ -20,22 +20,40 @@ exports.selectArticlesById = (article_id) => {
     })
   }
 
-  exports.selectAllArticles = (topic) => {
+  exports.selectAllArticles = (sort_by = 'created_at', order = 'desc', topic) => {
     let queryString = `SELECT COUNT(c.comment_id):: INT AS comment_count , a.author, a.title, a.article_id, topic, a.created_at, a.votes, a.article_img_url FROM comments c
     FULL OUTER JOIN articles a 
-    ON a.article_id = c.article_id
-   `
+    ON a.article_id = c.article_id`
+    if(sort_by===''){
+      sort_by = 'created_at'
+    }
+    if(order===''){
+      order = 'desc'
+    }
+   const orderValues = ['asc','desc']
+   const  sortByValues = ['author','title','article_id','topic','created_at','votes','article_img_url','comment_count']
+ 
+   if (sortByValues.includes(sort_by.toLowerCase()) === false) {
+
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
+  if (orderValues.includes(order.toLowerCase()) === false) {
+
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
+  
     if (topic){
-      const topicQuery = format(`WHERE topic = %L`, topic ); 
+      const topicQuery = format(`
+      WHERE topic = %L`, topic ); 
       queryString += topicQuery;
     }
   
-    const orderString = `
+    queryString += `
     GROUP BY a.article_id
-    ORDER BY a.created_at DESC ;`
-  
-    queryString += orderString;
-  
+    ORDER BY a.${sort_by} ${order}
+    ; 
+    `
+
     return db
     .query(queryString)
     .then((result) => {
