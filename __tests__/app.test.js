@@ -4,6 +4,7 @@ const { topicData, userData, articleData, commentData } = require("../db/data/te
 const endpoints = require("../endpoints.json")
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
+const { expect } = require("@jest/globals");
 require("jest-sorted")
 
 beforeEach(() => seed({ topicData, userData, articleData, commentData }));
@@ -515,7 +516,121 @@ it('DELETE:404 responds with an appropriate status and error message when not gi
       expect(response.body.msg).toBe('path not found');
     })
 })
+
+it("PATCH 200 when the vote of the selected comments can be incremented without changing rest properties of the article", () => {
+  const updatedVote =  {
+    inc_votes:1
+    }
+  const commentCopy =     {
+    comment_id: 9,
+    body: 'Superficially charming',
+    article_id: 1,
+    author: 'icellusedkars',
+    votes: 0,
+    created_at: '2020-01-01T03:08:00.000Z'
+  }
+  return request(app)
+  .patch('/api/comments/9') 
+  .send(updatedVote)
+  .expect(200)
+  .then(({body}) => {
+    const selectedComment = body.comments
+    expect(selectedComment.comment_id).toBe(commentCopy.comment_id)
+    expect(selectedComment.body).toBe(commentCopy.body)
+    expect(selectedComment.article_id).toBe(commentCopy.article_id)
+    expect(selectedComment.author).toBe(commentCopy.author)
+    expect(selectedComment.votes).toBe(1)
+    expect(selectedComment.created_at).toBe(commentCopy.created_at)
+
+  })
+}) 
+
+
+it("PATCH 200 when the vote of the selected comment can be decremented without changing rest properties of the comment", () => {
+  const updatedVote =  {
+    inc_votes:-1
+    }
+
+    const commentCopy =  {
+      comment_id: 1,
+      body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+      article_id: 9,
+      author: 'butter_bridge',
+      votes: 16,
+      created_at: '2020-04-06T13:17:00.000Z'
+    }
+
+  return request(app)
+  .patch('/api/comments/1') 
+  .send(updatedVote)
+  .expect(200)
+  .then(({body}) => {
+    const selectedComment = body.comments
+    expect(selectedComment.comment_id).toBe(commentCopy.comment_id)
+    expect(selectedComment.body).toBe(commentCopy.body)
+    expect(selectedComment.article_id).toBe(commentCopy.article_id)
+    expect(selectedComment.author).toBe(commentCopy.author)
+    expect(selectedComment.votes).toBe(15)
+    expect(selectedComment.created_at).toBe(commentCopy.created_at)
+
+  })
+}) 
+
+it("PATCH 400 when decrement a 0-vote comment", () => {
+  const updatedVote =  {
+    inc_votes:-1
+    }
+  return request(app)
+  .patch('/api/comments/9') 
+  .send(updatedVote)
+  .expect(400)
+  .then(({body}) => {
+    expect(body.msg).toBe("Bad Request");
+  }) 
 })
+
+it("PATCH 400 when given vote is not in correct format", () => {
+  const updatedVote =  {
+  inc_votes:"test"
+  }
+  return request(app)
+  .patch('/api/comments/9') 
+  .send(updatedVote)
+  .expect(400)
+  .then(({body}) => {
+  expect(body.msg).toBe("Bad Request");
+  }) 
+  })
+
+  it("PATCH 400 when given comment_id in URL is not in right format (number) ", () => {
+    const updatedVote =  {
+    inc_votes:-1
+    }
+    return request(app)
+    .patch('/api/comments/XX')
+    .send(updatedVote)
+    .expect(400)
+    .then(({body}) => {
+    expect(body.msg).toBe("Bad Request");
+    }) 
+    })
+
+    it("PATCH 404 when given comment_id is not found in database", () => {
+      const updatedVote =  {
+      inc_votes:-1
+      }
+      return request(app)
+      .patch('/api/comments/10101')
+      .send(updatedVote)
+      .expect(404)
+      .then(({body}) => {
+      expect(body.msg).toBe("Comment Not Found");
+      }) 
+      })
+})
+
+
+
 
 
 describe("/api/users", ()=> {
