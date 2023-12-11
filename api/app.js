@@ -5,7 +5,9 @@ const { getArticlesById, getAllArticles, getCommentsByArticleId, postComment, pa
 const { deleteCommentById } = require("./controllers/comments-controllers");
 const { getAllUsers } = require("./controllers/users-controllers");
 const app = express();
+const cors = require('cors')
 app.use(express.json())
+app.use(cors());
 app.get("/api/topics",getTopics)
 app.get("/api",getEndpoints)
 app.get("/api/articles/:article_id",getArticlesById)
