@@ -279,6 +279,91 @@ describe( "/api/articles", ()=> {
       expect(body.articles).toEqual([])
       })
   })
+
+
+  it("GET 200 sends an array of all articles in selected order", () => {
+    return request(app)
+    .get("/api/articles?order=asc")
+    .expect(200)
+    .then(({body}) => {
+      expect(body.articles).toBeSortedBy("created_at");
+      expect(body.articles).toHaveLength(13);
+  
+      })
+    })
+  
+  
+  it("GET 400 when an order does not exist", () => {
+  return request(app)
+  .get("/api/articles?order=XX")
+  .expect(400)
+  .then(({ body }) => {
+    expect(body.msg).toBe("Bad Request");
+    })
+  })
+  
+  it("GET 200 to return full articles like get /api/articles in default order when given an empty order query", () => {
+  return request(app)
+  .get("/api/articles?order=")
+  .expect(200)
+  .then(({ body }) => {
+    expect(body.articles).toBeSortedBy("created_at", {descending: true});
+    expect(body.articles).toHaveLength(13);
+    body.articles.forEach((article)=> {
+    expect(typeof article.author).toBe("string")
+    expect(typeof article.title).toBe("string")
+    expect(typeof article.article_id).toBe("number")
+    expect(typeof article.topic).toBe("string")
+    expect(typeof article.created_at).toBe("string")
+    expect(typeof article.votes).toBe("number")
+    expect(typeof article.article_img_url).toBe("string")
+    expect(typeof article.comment_count).toBe("number")
+    expect(article).not.toHaveProperty("body")
+    })
+  
+    })
+  })
+  
+  it("GET 200 sends an array of all articles sorted by selected property ", () => {
+    return request(app)
+    .get("/api/articles?sort_by=author")
+    .expect(200)
+    .then(({body}) => {
+      expect(body.articles).toBeSortedBy("author", {descending: true});
+      expect(body.articles).toHaveLength(13);
+      })
+    })
+  
+  
+  it("GET 400 when given sort_by property does not exist", () => {
+  return request(app)
+  .get("/api/articles?sort_by=XX")
+  .expect(400)
+  .then(({ body }) => {
+    expect(body.msg).toBe("Bad Request");
+    })
+  })
+  
+  it("GET 200 to return full articles like get /api/articles sorted by default value when given an empty sort_by query", () => {
+  return request(app)
+  .get("/api/articles?sort_by=")
+  .expect(200)
+  .then(({ body }) => {
+    expect(body.articles).toBeSortedBy("created_at", {descending: true});
+    expect(body.articles).toHaveLength(13);
+    body.articles.forEach((article)=> {
+    expect(typeof article.author).toBe("string")
+    expect(typeof article.title).toBe("string")
+    expect(typeof article.article_id).toBe("number")
+    expect(typeof article.topic).toBe("string")
+    expect(typeof article.created_at).toBe("string")
+    expect(typeof article.votes).toBe("number")
+    expect(typeof article.article_img_url).toBe("string")
+    expect(typeof article.comment_count).toBe("number")
+    expect(article).not.toHaveProperty("body")
+    })
+    })
+  })
 })
 
 describe( "/api/articles/:article_id/comments", ()=> {
